@@ -1,45 +1,43 @@
-%bcond_with check
-
-%global with_debug 1
-%if 0%{?with_debug}
-%global debug_package   %{nil}
-%endif
-
 Name:           dde-device-formatter
-Version:        0.0.1.1
+Version:        0.0.1.6
 Release:        1
-Summary:        A simple graphical interface for creating file system in a block device.
+Summary:        A simple graphical interface for creating file system in a block device
 License:        GPLv3+
 URL:            https://github.com/linuxdeepin/dde-device-formatter
-Source0:        https://github.com/linuxdeepin/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        %{name}-%{version}.tar.gz
 
-BuildRequires: dtkwidget-devel dtkgui-devel dtkcore-devel dde-qt-dbus-factory-devel deepin-gettext-tools
-BuildRequires: udisks2-qt5 udisks2-qt5-devel qt5-linguist qt5-qtbase-devel qt5-qtx11extras-devel
+BuildRequires: dtkwidget-devel dtkgui-devel dtkcore-devel qt5-devel
+BuildRequires: dtkwidget-devel
+BuildRequires: dtkgui-devel
+BuildRequires: udisks2-qt5-devel
+BuildRequires: deepin-gettext-tools
 
 %description
-A simple graphical interface for creating file system in a block device.
+%{summary}.
 
 %prep
 %autosetup
 
 %build
-export PATH=$PATH:/usr/lib64/qt5/bin
-mkdir build && cd build
-%{_libdir}/qt5/bin/qmake ..
-%{__make}
-
-%install
-pushd %{_builddir}/%{name}-%{version}/build
-%make_install INSTALL_ROOT=%{buildroot}
+export PATH=%{_qt5_bindir}:$PATH
+mkdir build && pushd build
+%qmake_qt5 ../ VERSION=%{version} LIB_INSTALL_DIR=%{_libdir} DEFINES+="VERSION=%{version}"
+%make_build
 popd
 
+%install
+%make_install -C build INSTALL_ROOT="%buildroot"
+
+
 %files
+%doc README.md
+%license LICENSE
 %{_bindir}/%{name}
 %{_datadir}/%{name}/*
 
-%doc README.md
-%license LICENSE
-
 %changelog
+* Thu Jul 08 2021 weidong <weidong@uniontech.com> - 0.0.1.6-1
+- Update 0.0.1.6
+
 * Thu Sep 10 2020 chenbo pan <panchenbo@uniontech.com> - 0.0.1.1-1
 - Initial package build
